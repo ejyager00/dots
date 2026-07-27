@@ -5,15 +5,15 @@
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (gnu system shadow)
-  #:use-module (gnu packages)          ; specifications->packages
-  #:use-module (guix gexp))            ; local-file
+  #:use-module (gnu packages)
+  #:use-module (guix gexp))
 
 (define home-config
   (home-environment
     (packages
      (specifications->packages
       (list "icecat"
-            "git")))                  ; whatever belongs in the user profile
+            "git")))
 
     (services
       (append

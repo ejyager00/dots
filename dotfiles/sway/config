@@ -239,3 +239,9 @@ bar {
 }
 
 include @sysconfdir@/sway/config.d/*
+
+exec swayidle -w \
+  before-sleep 'swaylock -f' \
+  lock 'swaylock -f' \
+  timeout 600 'swaylock -f' \
+  timeout 1200 'loginctl suspend'
