@@ -1,3 +1,4 @@
+;; ~/.dots/sys-config.scm
 ;; Use the 'guix system reconfigure' command to effect your
 ;; changes.
 

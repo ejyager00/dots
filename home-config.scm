@@ -1,4 +1,4 @@
-;; ~/.dotfiles/home-configuration.scm
+;; ~/.dots/home-config.scm
 (define-module (home-configuration)
   #:use-module (gnu home)
   #:use-module (gnu home services)
