@@ -3,7 +3,7 @@
 case "$(printf '%s\n' lock logout sleep reboot shutdown | wmenu -i -p power)" in
   lock)     swaylock ;;
   logout)   swaymsg exit ;;
-  sleep)  loginctl suspend ;;
+  sleep)    swaylock -f; sleep 5; loginctl suspend ;;
   reboot)   loginctl reboot ;;
   shutdown) loginctl poweroff ;;
 esac
