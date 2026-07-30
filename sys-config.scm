@@ -51,8 +51,8 @@
                   sddm-service-type)
                  (service screen-locker-service-type
                           (screen-locker-configuration (name "swaylock")
-                                                       (program (file-append
-                                                                 (specification->package "swaylock-effects")
+                                                       (program (file-append (specification->package
+                                                                              "swaylock-effects")
                                                                  "/bin/swaylock"))
                                                        (using-pam? #t)
                                                        (using-setuid? #f))))

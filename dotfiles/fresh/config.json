@@ -15,6 +15,9 @@
       "auto_start": true,
       "root_markers": ["guix.scm", "channels.scm", ".git"]
     }
+  },
+  "check_for_updates": "false",
+  "file_explorer": {
+    "show_hidden": true
   }
-  "check_for_updates": "false"
 }

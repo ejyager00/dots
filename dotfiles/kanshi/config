@@ -1,0 +1,15 @@
+# Identifiers are the EDID triple "make model serial" as sway reports them.
+# They survive port changes and connector renumbering; connector names do not.
+
+profile dual {
+	output "Dell Inc. DELL SE2219H 650T043"       mode 1920x1080@60Hz position 0,0    scale 1
+	output "Acer Technologies KB272 E 34030B5623W01" mode 1920x1080@60Hz position 1920,0 scale 1
+}
+
+profile dell-only {
+	output "Dell Inc. DELL SE2219H 650T043" mode 1920x1080@60Hz position 0,0 scale 1
+}
+
+profile acer-only {
+	output "Acer Technologies KB272 E 34030B5623W01" mode 1920x1080@60Hz position 0,0 scale 1
+}

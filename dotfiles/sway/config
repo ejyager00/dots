@@ -241,3 +241,15 @@ bar {
 }
 
 include @sysconfdir@/sway/config.d/*
+
+include guix-autostart
+
+# screenshots
+bindsym $mod+Print       exec grim - | wl-copy
+bindsym $mod+Shift+Print exec grim -g "$(slurp)" - | wl-copy
+
+# clipboard history
+bindsym $mod+v exec cliphist list | wmenu -l 10 | cliphist decode | wl-copy
+
+# notifications
+bindsym $mod+n exec swaync-client -t -sw
