@@ -2,7 +2,6 @@
 ;; Use the 'guix system reconfigure' command to effect your
 ;; changes.
 
-
 ;; Indicate which modules to import to access the variables
 ;; used in this configuration.
 (use-modules (gnu)
@@ -11,9 +10,7 @@
              (guix packages)
              (guix download)
              (gnu services sddm)
-             (gnu packages shells)
-             (gnu services authentication)
-             (gnu packages window-management))
+             (gnu packages shells))
 (use-service-modules cups desktop networking ssh xorg)
 
 (operating-system
@@ -33,54 +30,58 @@
                   (group "users")
                   (home-directory "/home/eric")
                   (supplementary-groups '("wheel" "netdev" "audio" "video"))
-                  (shell (file-append zsh "/bin/zsh")))
-                %base-user-accounts))
+                  (shell (file-append zsh "/bin/zsh"))) %base-user-accounts))
 
   ;; Packages installed system-wide.  Users can also install packages
   ;; under their own account: use 'guix search KEYWORD' to search
   ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list (specification->package "sway")
-                          (specification->package "swaylock-effects")
-                          (specification->package "wmenu")
-                          (specification->package "foot")) %base-packages))
+  (packages (append (list (specification->package "sway")) %base-packages))
 
   ;; Below is the list of system services.  To search for available
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
-   (append (list (service plasma-desktop-service-type)
-                 (service openssh-service-type)
+   (append (list (service openssh-service-type)
                  (service cups-service-type)
                  (service sddm-service-type
-                          (sddm-configuration
-                           (display-server "x11")
-                           (theme "maldives")
-                           (remember-last-user? #t)))
+                          (sddm-configuration (display-server "x11")
+                                              (theme "maldives")
+                                              (remember-last-user? #t)))
                  (set-xorg-configuration
                   (xorg-configuration (keyboard-layout keyboard-layout))
                   sddm-service-type)
                  (service screen-locker-service-type
-                  (screen-locker-configuration
-                   (name "swaylock")
-                   (program (file-append swaylock-effects "/bin/swaylock"))
-                   (using-pam? #t)
-                   (using-setuid? #f))))
+                          (screen-locker-configuration (name "swaylock")
+                                                       (program (file-append
+                                                                 (specification->package "swaylock-effects")
+                                                                 "/bin/swaylock"))
+                                                       (using-pam? #t)
+                                                       (using-setuid? #f))))
            (modify-services %desktop-services
              (delete gdm-service-type)
              (guix-service-type config =>
-               (guix-configuration
-                 (inherit config)
-                 (substitute-urls
-                   (cons* "https://substitutes.nonguix.org"
-                          %default-substitute-urls))
-                 (authorized-keys
-                   (cons* (origin
-                            (method url-fetch)
-                            (uri "https://substitutes.nonguix.org/signing-key.pub")
-                            (file-name "nonguix.pub")
-                            (sha256
-                             (base32
-                              "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))
-                          %default-authorized-guix-keys)))))))
+                                (guix-configuration (inherit config)
+                                                    (substitute-urls (cons*
+                                                                      "https://substitutes.nonguix.org"
+                                                                      %default-substitute-urls))
+                                                    (authorized-keys (cons* (origin
+                                                                              
+                                                                              
+                                                                              (method
+                                                                               url-fetch)
+
+                                                                              
+                                                                              (uri
+                                                                               "https://substitutes.nonguix.org/signing-key.pub")
+
+                                                                              
+                                                                              (file-name
+                                                                               "nonguix.pub")
+
+                                                                              
+                                                                              (sha256
+                                                                               (base32
+                                                                                "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))
+                                                                      %default-authorized-guix-keys)))))))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
@@ -91,15 +92,13 @@
   ;; by running 'blkid' in a terminal.
   (file-systems (cons* (file-system
                          (mount-point "/home")
-                         (device (uuid
-                                  "7ba1bacc-8ea6-4822-ad1d-1d4a5166b096"
-                                  'ext4))
+                         (device (uuid "7ba1bacc-8ea6-4822-ad1d-1d4a5166b096"
+                                       'ext4))
                          (type "ext4"))
                        (file-system
                          (mount-point "/")
-                         (device (uuid
-                                  "fc9b45b7-b004-46af-a062-3eae624c3e1b"
-                                  'ext4))
+                         (device (uuid "fc9b45b7-b004-46af-a062-3eae624c3e1b"
+                                       'ext4))
                          (type "ext4"))
                        (file-system
                          (mount-point "/boot/efi")
