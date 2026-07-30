@@ -11,7 +11,7 @@
              (guix download)
              (gnu services sddm)
              (gnu packages shells))
-(use-service-modules cups desktop networking ssh xorg)
+(use-service-modules cups desktop networking sound ssh xorg)
 
 (operating-system
   (locale "en_US.utf8")
@@ -58,6 +58,7 @@
                                                        (using-setuid? #f))))
            (modify-services %desktop-services
              (delete gdm-service-type)
+             (delete pulseaudio-service-type)
              (guix-service-type config =>
                                 (guix-configuration (inherit config)
                                                     (substitute-urls (cons*

@@ -1,0 +1,124 @@
+#!/bin/sh
+exec guile -e main -s "$0" "$@"
+!#
+(use-modules (ice-9 match))
+
+(define %width 78)
+
+;; Self-contained gexp reader/printer support -- deliberately NOT loading
+;; (guix gexp): that pulls in the entire guix module tree and, if it was
+;; compiled against a different guile ABI than the one running this script
+;; (e.g. `guix` in /run/current-system/profile vs. whatever `guile` is on
+;; PATH), triggers "incompatible bytecode version" warnings and slow
+;; recompilation, or fails outright. We only need the *syntax*, not the
+;; semantics, so we register our own tags for #~ #$ #$@ #+ #+@ and print
+;; them back the same way -- no dependency on guix's guile version at all.
+(read-hash-extend #\~ (lambda (chr port) (list 'gsfmt:gexp (read port))))
+(read-hash-extend #\$
+  (lambda (chr port)
+    (if (eqv? (peek-char port) #\@)
+        (begin (read-char port) (list 'gsfmt:ungexp-splicing (read port)))
+        (list 'gsfmt:ungexp (read port)))))
+(read-hash-extend #\+
+  (lambda (chr port)
+    (if (eqv? (peek-char port) #\@)
+        (begin (read-char port) (list 'gsfmt:ungexp-native-splicing (read port)))
+        (list 'gsfmt:ungexp-native (read port)))))
+
+(define reader-macros
+  '((quote . "'") (quasiquote . "`")
+    (unquote . ",") (unquote-splicing . ",@")
+    (gsfmt:gexp . "#~")
+    (gsfmt:ungexp . "#$")
+    (gsfmt:ungexp-splicing . "#$@")
+    (gsfmt:ungexp-native . "#+")
+    (gsfmt:ungexp-native-splicing . "#+@")))
+
+(define (quote-form? obj)
+  (and (pair? obj) (symbol? (car obj)) (assq (car obj) reader-macros)
+       (pair? (cdr obj)) (null? (cddr obj))))
+
+(define (write->string obj)
+  (call-with-output-string (lambda (p) (write obj p))))
+
+;; single-line rendering, honoring quote/quasiquote/unquote sugar
+(define (render-flat obj)
+  (cond
+   ((quote-form? obj)
+    (string-append (cdr (assq (car obj) reader-macros)) (render-flat (cadr obj))))
+   ((pair? obj)
+    (let loop ((o obj) (acc '()))
+      (cond ((null? o) (string-append "(" (string-join (reverse acc) " ") ")"))
+            ((pair? o) (loop (cdr o) (cons (render-flat (car o)) acc)))
+            (else (string-append "(" (string-join (reverse acc) " ")
+                                  " . " (render-flat o) ")")))))
+   ((vector? obj)
+    (string-append "#(" (string-join (map render-flat (vector->list obj)) " ") ")"))
+   (else (write->string obj))))
+
+(define (has-newline? s)
+  (let loop ((i 0))
+    (cond ((>= i (string-length s)) #f)
+          ((char=? (string-ref s i) #\newline) #t)
+          (else (loop (+ i 1))))))
+
+(define (indent-str n) (make-string n #\space))
+
+;; fmt: render obj starting at column col. Tries one line first; if it
+;; doesn't fit within %width, breaks with a fixed +2 indent per level
+;; (NOT aligned under the operator/first argument -- this is the whole
+;; point: indentation never drifts with symbol length or nesting depth).
+(define (fmt obj col)
+  (if (quote-form? obj)
+      (let ((prefix (cdr (assq (car obj) reader-macros))))
+        (string-append prefix (fmt (cadr obj) (+ col (string-length prefix)))))
+      (let ((flat (render-flat obj)))
+        (if (and (not (has-newline? flat)) (<= (+ col (string-length flat)) %width))
+            flat
+            (cond
+             ((pair? obj) (fmt-list obj col))
+             ((vector? obj) (fmt-vector obj col))
+             (else flat))))))
+
+(define (fmt-list obj col)
+  (let loop ((o obj) (first #t) (body-indent #f) (lines '()))
+    (cond
+     ((null? o)
+      (string-append "(" (string-join (reverse lines) (string-append "\n" (indent-str body-indent))) ")"))
+     ((pair? o)
+      (if first
+          (loop (cdr o) #f (+ col 2) (list (fmt (car o) (+ col 1))))
+          (loop (cdr o) #f body-indent (cons (fmt (car o) body-indent) lines))))
+     (else ;; dotted tail
+      (string-append "(" (string-join (reverse (cons (string-append ". " (fmt o body-indent)) lines))
+                                       (string-append "\n" (indent-str body-indent)))
+                     ")")))))
+
+(define (fmt-vector v col)
+  (let* ((elems (vector->list v))
+         (body-indent (+ col 2)))
+    (if (null? elems)
+        "#()"
+        (string-append "#(" (string-join (map (lambda (e) (fmt e body-indent)) elems)
+                                          (string-append "\n" (indent-str body-indent)))
+                       ")"))))
+
+(define (format-port in out)
+  (let loop ((form (read in)) (first #t))
+    (unless (eof-object? form)
+      (unless first (newline out))
+      (display (fmt form 0) out)
+      (newline out)
+      (loop (read in) #f))))
+
+(define (main args)
+  (match (cdr args)
+    (("-i" file)
+     (let ((text (call-with-input-file file
+                   (lambda (in) (call-with-output-string (lambda (out) (format-port in out)))))))
+       (call-with-output-file file (lambda (out) (display text out)))))
+    ((file)
+     (call-with-input-file file (lambda (in) (format-port in (current-output-port)))))
+    (_
+     (display "usage: gsfmt [-i] FILE\n" (current-error-port))
+     (exit 1))))
