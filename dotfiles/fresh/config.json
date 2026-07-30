@@ -1,0 +1,20 @@
+{
+  "languages": {
+    "scheme": {
+      "extensions": ["scm", "ss", "sld"],
+      "grammar": "Lisp",
+      "comment_prefix": ";",
+      "auto_indent": true
+    }
+  },
+  "lsp": {
+    "scheme": {
+      "command": "guile-lsp-server",
+      "args": [],
+      "enabled": true,
+      "auto_start": true,
+      "root_markers": ["guix.scm", "channels.scm", ".git"]
+    }
+  }
+  "check_for_updates": "false"
+}
