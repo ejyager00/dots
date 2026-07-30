@@ -1,0 +1,4 @@
+[user]
+    signingkey = 1C96981049FF9A9D0021D960A63252C709ECBA81
+[gpg]
+    program = gpg
