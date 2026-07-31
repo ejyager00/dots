@@ -1,7 +1,7 @@
 (list
   (channel
     (name 'guix)
-    (url "https://git.guix.gnu.org/guix.git")
+    (url "git@codeberg.org:guix/guix.git")
     (branch "master")
     (introduction
       (make-channel-introduction
@@ -38,7 +38,7 @@
           "3FFA 7335 973E 0A49 47FC  0A8C 38D5 96BE 07D3 34AB"))))
   (channel
     (name 'panther)
-    (url "https://codeberg.org/gofranz/panther")
+    (url "git@codeberg.org:gofranz/panther.git")
     (branch "master")
     (introduction
       (make-channel-introduction

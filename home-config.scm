@@ -15,6 +15,7 @@
   (ejyager00 home template)
   (ejyager00 packages editors)
   (ejyager00 packages brave)
+  (px packages ai)
   (saayix packages terminals))
 
 ;;; Resolve binaries to absolute store paths so autostart never depends on
@@ -38,7 +39,7 @@
 (home-environment
   (packages
     (append
-      (list brave-origin-bin fresh-editor ghostty)
+      (list brave-origin-bin fresh-editor claude-code ghostty)
       (specifications->packages
         (list
           "icecat"
@@ -118,7 +119,7 @@
           'my-env
           home-environment-variables-service-type
           `(("EDITOR" . "fresh")
-             ("BROWSER" . "icecat")
+             ("BROWSER" . "brave-origin")
              ("PATH" . "$PATH:$HOME/.local/bin")
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
