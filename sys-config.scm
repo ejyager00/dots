@@ -17,7 +17,7 @@
   (host-name "roundabits")
 
   (kernel linux)
-  (kernel-arguments (cons "sysrq_always_enabled=1" %default-kernel-arguments))
+  (kernel-arguments (append '("sysrq_always_enabled=1" "loglevel=8" "ignore_loglevel") %default-kernel-arguments))
   (initrd microcode-initrd)
   (firmware (list linux-firmware))
 

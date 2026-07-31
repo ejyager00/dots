@@ -8,11 +8,13 @@
   (gnu home services sound)
   (gnu packages)
   (gnu packages gnupg)
+  (gnu packages crypto)
   (gnu services)
   (gnu system shadow)
   (guix gexp)
   (ejyager00 home template)
   (ejyager00 packages editors)
+  (ejyager00 packages brave)
   (saayix packages terminals))
 
 ;;; Resolve binaries to absolute store paths so autostart never depends on
@@ -36,13 +38,14 @@
 (home-environment
   (packages
     (append
-      (list fresh-editor ghostty)
+      (list brave-origin-bin fresh-editor ghostty)
       (specifications->packages
         (list
           "icecat"
           "git"
           "guile-lsp-server"
           "pinentry-qt"
+          "keychain"
           "jq"
           "swaylock-effects"
           "foot"
