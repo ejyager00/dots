@@ -17,6 +17,7 @@
   (host-name "roundabits")
 
   (kernel linux)
+  (kernel-arguments (cons "sysrq_always_enabled=1" %default-kernel-arguments))
   (initrd microcode-initrd)
   (firmware (list linux-firmware))
 

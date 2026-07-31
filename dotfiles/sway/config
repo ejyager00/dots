@@ -23,7 +23,7 @@ set $menu wmenu-run
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
-output * bg ~/Images/backgrounds/pixelFamilyPortrait.26.07.24.png fill
+output * bg ~/Images/backgrounds/pixelFamilyPortrait.26.07.30.png fill
 #
 # Example configuration:
 #
