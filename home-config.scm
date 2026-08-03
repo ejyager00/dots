@@ -7,14 +7,19 @@
   (gnu home services shells)
   (gnu home services sound)
   (gnu packages)
-  (gnu packages gnupg)
+  (gnu packages base)
   (gnu packages crypto)
+  (gnu packages curl)
+  (gnu packages gnupg)
+  (gnu packages node)
+  (gnu packages text-editors)
   (gnu services)
   (gnu system shadow)
   (guix gexp)
   (ejyager00 home template)
   (ejyager00 packages editors)
   (ejyager00 packages brave)
+  (ejyager00 packages glow)
   (px packages ai)
   (saayix packages terminals))
 
@@ -39,11 +44,14 @@
 (home-environment
   (packages
     (append
-      (list brave-origin-bin fresh-editor claude-code ghostty)
+      (list brave-origin-bin fresh-editor glow claude-code ghostty)
       (specifications->packages
         (list
           "icecat"
           "git"
+          "micro"
+          "make"
+          "curl"
           "guile-lsp-server"
           "pinentry-qt"
           "keychain"
@@ -52,9 +60,12 @@
           "foot"
           "wmenu"
           "gnupg"
+          "password-store"
           "playerctl"
           "wireplumber"
           "dbus"
+          "node"
+          "glibc"
           "lxqt-policykit"
           "swaynotificationcenter"
           "xdg-desktop-portal"

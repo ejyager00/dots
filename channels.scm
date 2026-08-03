@@ -1,7 +1,7 @@
 (list
   (channel
     (name 'guix)
-    (url "git@codeberg.org:guix/guix.git")
+    (url "https://git.guix.gnu.org/guix.git")
     (branch "master")
     (introduction
       (make-channel-introduction
@@ -28,9 +28,9 @@
           "1C96 9810 49FF 9A9D 0021  D960 A632 52C7 09EC BA81"))))
   (channel
     (name 'saayix)
+    (url "https://codeberg.org/look/saayix")
     (branch "main")
     (commit "1383e5e465b82cf8d82e31d43c9477c8d1265692")
-    (url "https://codeberg.org/look/saayix")
     (introduction
       (make-channel-introduction
         "12540f593092e9a177eb8a974a57bb4892327752"
@@ -38,8 +38,9 @@
           "3FFA 7335 973E 0A49 47FC  0A8C 38D5 96BE 07D3 34AB"))))
   (channel
     (name 'panther)
-    (url "git@codeberg.org:gofranz/panther.git")
+    (url "https://codeberg.org/gofranz/panther")
     (branch "master")
+    (commit "8a5ff5aa1e0f9e2fec3f888abeff3f3f2e42d4ff")
     (introduction
       (make-channel-introduction
         "54b4056ac571611892c743b65f4c47dc298c49da"
