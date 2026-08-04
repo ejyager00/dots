@@ -6,53 +6,83 @@
 (define %home-packages
   (specifications->packages
     (list
-      "brave-origin-bin"
-      "fresh-editor"
-      "glow"
-      "claude-code"
-      "ghostty"
+      ;; Browsers
       "icecat"
-      "git"
+      "brave-origin-bin"
+
+      ;; Editors & language tooling
+      "fresh-editor"
       "micro"
-      "make"
-      "curl"
-      "bat"
-      "socat"
-      "pandoc"
-      "ripgrep"
-      "tig"
-      "w3m"
-      "nb"
       "guile-lsp-server"
-      "pinentry-qt"
-      "keychain"
-      "jq"
-      "swaylock-effects"
+      "claude-code"
+
+      ;; Terminal emulators
+      "ghostty"
       "foot"
-      "wmenu"
-      "gnupg"
-      "password-store"
-      "playerctl"
-      "wireplumber"
-      "dbus"
+
+      ;; Version control
+      "git"
+      "tig"
+
+      ;; Build & language toolchains
+      "make"
       "node"
       "glibc"
-      "lxqt-policykit"
+
+      ;; CLI utilities
+      "bat"
+      "ripgrep"
+      "jq"
+      "curl"
+      "socat"
+
+      ;; Documents & notes
+      "glow"
+      "pandoc"
+      "w3m"
+      "nb"
+
+      ;; Security & secrets
+      "gnupg"
+      "pinentry-qt"
+      "keychain"
+      "password-store"
+
+      ;; Sway/Wayland desktop
+      "swaylock-effects"
+      "wmenu"
+      "kanshi"
       "swaynotificationcenter"
+      "lxqt-policykit"
+
+      ;; XDG desktop portals
       "xdg-desktop-portal"
       "xdg-desktop-portal-wlr"
       "xdg-desktop-portal-gtk"
-      "kanshi"
+
+      ;; Screenshots & clipboard
       "grim"
       "slurp"
       "wl-clipboard"
       "clipman"
+
+      ;; Media & system services
+      "playerctl"
+      "wireplumber"
+      "dbus"
+
+      ;; Icon themes
       "hicolor-icon-theme"
       "adwaita-icon-theme"
       "breeze-icons"
+
+      ;; Fonts
       "font-dejavu"
       "font-google-noto"
       "font-google-noto-emoji"
       "font-google-noto-sans-cjk"
       "font-liberation"
-      "font-fira-code")))
+      "font-fira-code"
+
+      ;; Gaming
+      "steam")))
