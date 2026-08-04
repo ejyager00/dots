@@ -1,4 +1,7 @@
 ;; ~/.dots/home-config.scm
+(eval-when (expand load eval)
+  (add-to-load-path (dirname (current-filename))))
+
 (use-modules
   (gnu home)
   (gnu home services)
@@ -7,21 +10,12 @@
   (gnu home services shells)
   (gnu home services sound)
   (gnu packages)
-  (gnu packages base)
-  (gnu packages crypto)
-  (gnu packages curl)
   (gnu packages gnupg)
-  (gnu packages node)
-  (gnu packages text-editors)
   (gnu services)
   (gnu system shadow)
   (guix gexp)
   (ejyager00 home template)
-  (ejyager00 packages editors)
-  (ejyager00 packages brave)
-  (ejyager00 packages glow)
-  (px packages ai)
-  (saayix packages terminals))
+  (dotfiles packages))
 
 ;;; Resolve binaries to absolute store paths so autostart never depends on
 ;;; PATH ordering between the system and home profiles.
@@ -42,49 +36,7 @@
      ("clipman"              . ,(bin "clipman" "clipman")))))
 
 (home-environment
-  (packages
-    (append
-      (list brave-origin-bin fresh-editor glow claude-code ghostty)
-      (specifications->packages
-        (list
-          "icecat"
-          "git"
-          "micro"
-          "make"
-          "curl"
-          "guile-lsp-server"
-          "pinentry-qt"
-          "keychain"
-          "jq"
-          "swaylock-effects"
-          "foot"
-          "wmenu"
-          "gnupg"
-          "password-store"
-          "playerctl"
-          "wireplumber"
-          "dbus"
-          "node"
-          "glibc"
-          "lxqt-policykit"
-          "swaynotificationcenter"
-          "xdg-desktop-portal"
-          "xdg-desktop-portal-wlr"
-          "xdg-desktop-portal-gtk"
-          "kanshi"
-          "grim"
-          "slurp"
-          "wl-clipboard"
-          "clipman"
-          "hicolor-icon-theme"
-          "adwaita-icon-theme"
-          "breeze-icons"
-          "font-dejavu"
-          "font-google-noto"
-          "font-google-noto-emoji"
-          "font-google-noto-sans-cjk"
-          "font-liberation"
-          "font-fira-code"))))
+  (packages %home-packages)
 
   (services
     (append
