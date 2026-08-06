@@ -5,7 +5,7 @@
 # Push the Wayland session into the D-Bus activation environment.  home-dbus
 # starts before sway, so activated services (portals) otherwise inherit an env
 # with no WAYLAND_DISPLAY and fail.  Must precede everything else.
-exec @{dbus-update-activation-environment} WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY XAUTHORITY
+exec @{dbus-update-activation-environment} WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY XAUTHORITY XDG_DATA_DIRS
 
 # Polkit authentication agent.  Without this, anything invoking polkit (udisks
 # mounts, NM system connections) fails with no visible prompt.

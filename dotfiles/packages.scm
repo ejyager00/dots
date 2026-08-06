@@ -23,11 +23,13 @@
       ;; Version control
       "git"
       "tig"
+      "gh"
 
       ;; Build & language toolchains
       "make"
       "node"
       "glibc"
+      "python"
 
       ;; CLI utilities
       "bat"
@@ -35,6 +37,7 @@
       "jq"
       "curl"
       "socat"
+      "ncurses"
 
       ;; Documents & notes
       "glow"
@@ -83,6 +86,6 @@
       "font-google-noto-sans-cjk"
       "font-liberation"
       "font-fira-code"
-
-      ;; Gaming
-      "steam")))
+      
+      ;; Flatpak
+      "flatpak")))

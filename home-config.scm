@@ -58,7 +58,11 @@
              (".local/bin/powermenu"
                ,(local-file "dotfiles/powermenu.sh" #:recursive? #t))
              (".local/bin/gsfmt"
-               ,(local-file "dotfiles/gsfmt" #:recursive? #t))))
+               ,(local-file "dotfiles/gsfmt" #:recursive? #t))
+             (".local/bin/steam-flatpak"
+               ,(program-file "steam-flatpak"
+                 #~(execl "/bin/sh" "sh" "-c"
+                          "exec flatpak run com.valvesoftware.Steam \"$@\"")))))
         (service
           home-xdg-configuration-files-service-type
           `(("gdb/gdbinit" ,%default-gdbinit)
@@ -83,6 +87,7 @@
           home-environment-variables-service-type
           `(("EDITOR" . "fresh")
              ("BROWSER" . "brave-origin")
+             ("NB_BROWSER" . "w3m")
              ("PATH" . "$PATH:$HOME/.local/bin")
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
@@ -94,7 +99,8 @@
              ("_JAVA_AWT_WM_NONREPARENTING" . "1")
              ("GTK_THEME" . "Adwaita:dark")
              ("XCURSOR_THEME" . "Adwaita")
-             ("XCURSOR_SIZE" . "24")))
+             ("XCURSOR_SIZE" . "24")
+             ("XDG_DATA_DIRS" . "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:$XDG_DATA_DIRS")))
         (service
           home-gpg-agent-service-type
           (home-gpg-agent-configuration
