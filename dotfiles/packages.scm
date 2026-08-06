@@ -57,6 +57,7 @@
       "kanshi"
       "swaynotificationcenter"
       "lxqt-policykit"
+      "i3status-rust"
 
       ;; XDG desktop portals
       "xdg-desktop-portal"

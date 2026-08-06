@@ -227,9 +227,9 @@ bindsym --locked XF86AudioMute        exec wpctl set-mute   @DEFAULT_AUDIO_SINK@
 bar {
     position top
 
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %X'; do sleep 1; done
+    # i3status-rs speaks the i3bar JSON protocol: per-block click/scroll
+    # (right-click mutes, wheel adjusts volume on the sound block) for free.
+    status_command i3status-rs
 
     colors {
         statusline #ffffff

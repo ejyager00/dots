@@ -74,6 +74,8 @@
              ("fresh/config.json" ,(local-file "dotfiles/fresh/config.json"))
              ("git-config" ,(local-file "dotfiles/git/config"))
              ("kanshi/config" ,(local-file "dotfiles/kanshi/config"))
+             ("i3status-rust/config.toml"
+               ,(local-file "dotfiles/i3status-rust/config.toml"))
              ("xdg-desktop-portal/portals.conf"
                ,(local-file "dotfiles/xdg-desktop-portal/portals.conf"))
              ("xdg-desktop-portal-wlr/config"
