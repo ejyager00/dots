@@ -1,0 +1,24 @@
+// ~/.dots/dotfiles/eww/eww.scss
+
+* {
+  font-family: "Fira Code";
+}
+
+// GTK paints the layer-shell window's own surface opaque by default, which
+// sits *behind* .fastfetch-box -- without this, the box's rgba alpha blends
+// against that opaque backdrop instead of the wallpaper and reads as solid.
+window {
+  background-color: transparent;
+}
+
+.fastfetch-box {
+  background-color: rgba(0, 0, 0, 0.65);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.fastfetch-label {
+  color: #ffffff;
+  font-size: 12px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}

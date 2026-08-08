@@ -44,6 +44,7 @@
       "pandoc"
       "w3m"
       "nb"
+      "anki"
 
       ;; Security & secrets
       "gnupg"
@@ -89,4 +90,8 @@
       "font-fira-code"
       
       ;; Flatpak
-      "flatpak")))
+      "flatpak"
+
+      ;; Desktop widgets
+      "eww"
+      "fastfetch")))

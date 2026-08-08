@@ -33,7 +33,16 @@
      ("swaync"               . ,(bin "swaynotificationcenter" "swaync"))
      ("kanshi"               . ,(bin "kanshi" "kanshi"))
      ("wl-paste"             . ,(bin "wl-clipboard" "wl-paste"))
-     ("clipman"              . ,(bin "clipman" "clipman")))))
+     ("clipman"              . ,(bin "clipman" "clipman"))
+     ("eww"                  . ,(bin "eww" "eww")))))
+
+(define %eww-yuck
+  (substituted-file
+   "eww-yuck"
+   (local-file "dotfiles/eww/eww.yuck.in")
+   `(("fastfetch" . ,(bin "fastfetch" "fastfetch"))
+     ("python3"   . ,(bin "python" "python3"))
+     ("ansi2pango" . ,(local-file "dotfiles/eww/ansi2pango.py")))))
 
 (home-environment
   (packages %home-packages)
@@ -70,6 +79,8 @@
              ("guix/channels.scm" ,(local-file "channels.scm"))
              ("sway/config" ,(local-file "dotfiles/sway/config"))
              ("sway/guix-autostart" ,%sway-autostart)
+             ("eww/eww.yuck" ,%eww-yuck)
+             ("eww/eww.scss" ,(local-file "dotfiles/eww/eww.scss"))
              ("swaylock/config" ,(local-file "dotfiles/swaylock/config"))
              ("fresh/config.json" ,(local-file "dotfiles/fresh/config.json"))
              ("git-config" ,(local-file "dotfiles/git/config"))
