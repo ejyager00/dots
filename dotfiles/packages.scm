@@ -72,6 +72,7 @@
       "clipman"
 
       ;; Media & system services
+      "ffmpeg"
       "playerctl"
       "wireplumber"
       "dbus"

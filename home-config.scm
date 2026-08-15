@@ -9,6 +9,7 @@
   (gnu home services gnupg)
   (gnu home services shells)
   (gnu home services sound)
+  (gnu home services ssh)
   (gnu packages)
   (gnu packages gnupg)
   (gnu services)
@@ -104,6 +105,7 @@
              ("PATH" . "$PATH:$HOME/.local/bin")
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
+             ("TMPDIR" . "/tmp")
              ("QT_QPA_PLATFORM" . "wayland;xcb")
              ("QT_WAYLAND_DISABLE_WINDOWDECORATION" . "1")
              ("GDK_BACKEND" . "wayland,x11")
@@ -114,6 +116,28 @@
              ("XCURSOR_THEME" . "Adwaita")
              ("XCURSOR_SIZE" . "24")
              ("XDG_DATA_DIRS" . "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:$XDG_DATA_DIRS")))
+        ;;; Connection sharing: the first ssh to a host opens a master
+        ;;; connection that later invocations reuse, so repeated commands skip
+        ;;; the TCP + key-exchange handshake.  %C hashes the connection
+        ;;; parameters, keeping the socket path well under the ~108-char UNIX
+        ;;; socket limit.
+        ;;;
+        ;;; No host-name pin: the router resolves "asahihome" via DHCP, and
+        ;;; known_hosts records the key under that name.  Pinning the IP would
+        ;;; make host-key verification look up the address instead, and a lease
+        ;;; change would break the pin and strand a stale entry.
+        (service
+          home-openssh-service-type
+          (home-openssh-configuration
+            (hosts
+              (list
+                (openssh-host
+                  (name "asahihome")
+                  (user "eric")
+                  (identity-file "~/.ssh/id_ed25519")
+                  (control-master 'auto)
+                  (control-file-name "~/.ssh/cm-%C")
+                  (control-persist "10m"))))))
         (service
           home-gpg-agent-service-type
           (home-gpg-agent-configuration
