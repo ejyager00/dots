@@ -1,4 +1,10 @@
 ;; ~/.dots/sys-config.scm
+
+;; Put this file's own directory on the load path so the (roundabits ...)
+;; modules alongside it are importable without passing -L to every guix
+;; command.
+(add-to-load-path (dirname (current-filename)))
+
 (use-modules
   (gnu)
   (nongnu packages linux)
@@ -6,7 +12,8 @@
   (guix packages)
   (guix download)
   (guix gexp)
-  (gnu packages shells))
+  (gnu packages shells)
+  (roundabits services tailscale))
 
 (use-service-modules cups desktop networking sound ssh xorg)
 
@@ -105,7 +112,8 @@
             (using-setuid? #f)))
             (udev-rules-service
               'steam-devices
-              (specification->package "steam-devices-udev-rules")))
+              (specification->package "steam-devices-udev-rules"))
+        (service tailscale-service-type))
       (modify-services
         %desktop-services
         (delete gdm-service-type)
