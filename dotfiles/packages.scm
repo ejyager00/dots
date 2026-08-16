@@ -45,6 +45,7 @@
       "w3m"
       "nb"
       "anki"
+      "direnv"
 
       ;; Security & secrets
       "gnupg"

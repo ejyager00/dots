@@ -19,3 +19,5 @@ eval $(keychain --eval --quiet id_ed25519)
 
 # Secrets kept in `pass` (GPG-backed), not in this tracked repo.
 export LIBRARIAN_API_TOKEN="$(pass show librarian/api-token 2>/dev/null)"
+
+eval "$(direnv hook zsh)"
