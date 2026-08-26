@@ -8,11 +8,13 @@
   (gnu home services desktop)
   (gnu home services gnupg)
   (gnu home services shells)
+  (gnu home services shepherd)
   (gnu home services sound)
   (gnu home services ssh)
   (gnu packages)
   (gnu packages gnupg)
   (gnu services)
+  (gnu services shepherd)
   (gnu system shadow)
   (guix gexp)
   (ejyager00 home template)
@@ -84,7 +86,7 @@
              ("eww/eww.scss" ,(local-file "dotfiles/eww/eww.scss"))
              ("swaylock/config" ,(local-file "dotfiles/swaylock/config"))
              ("fresh/config.json" ,(local-file "dotfiles/fresh/config.json"))
-             ("git-config" ,(local-file "dotfiles/git/config"))
+             ("git/config" ,(local-file "dotfiles/git/config"))
              ("kanshi/config" ,(local-file "dotfiles/kanshi/config"))
              ("i3status-rust/config.toml"
                ,(local-file "dotfiles/i3status-rust/config.toml"))
@@ -106,6 +108,10 @@
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
              ("TMPDIR" . "/tmp")
+             ;;; Points at the ssh-agent Shepherd service below.  Set here
+             ;;; rather than in zshrc so Sway-launched graphical apps inherit
+             ;;; it too -- they never source a shell rc file.
+             ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/ssh-agent.sock")
              ("QT_QPA_PLATFORM" . "wayland;xcb")
              ("QT_WAYLAND_DISABLE_WINDOWDECORATION" . "1")
              ("GDK_BACKEND" . "wayland,x11")
@@ -137,12 +143,60 @@
                   (identity-file "~/.ssh/id_ed25519")
                   (control-master 'auto)
                   (control-file-name "~/.ssh/cm-%C")
-                  (control-persist "10m"))))))
+                  (control-persist "10m"))
+                ;;; Forgejo's built-in SSH server.  It is published straight
+                ;;; on the tailnet address, not through Caddy -- Caddy only
+                ;;; fronts HTTPS (git.ericbits.win -> forgejo:3000).  Port
+                ;;; 2222 matches SSH_PORT in Forgejo's app.ini, so the name
+                ;;; here lets the short git@host:owner/repo form work.
+                (openssh-host
+                  (name "git.ericbits.win")
+                  (user "git")
+                  (port 2222)
+                  (identity-file "~/.ssh/id_ed25519"))))))
+        ;;; A single ssh-agent for the whole session, bound to a fixed
+        ;;; socket path so SSH_AUTH_SOCK can be a static string in the
+        ;;; environment above.  Shepherd starts it at login, before Sway
+        ;;; brings up graphical apps, so those get a working agent without
+        ;;; sourcing anything.  keychain in zshrc inherits this agent (its
+        ;;; default behaviour) and only adds keys to it.
+        (simple-service
+          'ssh-agent
+          home-shepherd-service-type
+          (list
+            (shepherd-service
+              (provision '(ssh-agent))
+              (documentation "Run ssh-agent on a fixed socket path.")
+              (modules '((shepherd support)))   ;for '%user-runtime-dir'
+              (start
+                #~(lambda args
+                    (let ((socket (string-append %user-runtime-dir
+                                                 "/ssh-agent.sock")))
+                      ;;; ssh-agent refuses to bind over an existing file, so
+                      ;;; clear the socket a previous generation left behind.
+                      (false-if-exception (delete-file socket))
+                      (apply (make-forkexec-constructor
+                               (list #$(bin "openssh" "ssh-agent")
+                                     "-D" "-a" socket))
+                             args))))
+              (stop #~(make-kill-destructor))
+              (respawn? #t))))
+        ;;; ssh-support? must stay #f.  Setting it #t is the only thing that
+        ;;; makes home-gpg-agent-service-type register a Shepherd service, and
+        ;;; that service launches `gpg-agent --supervised', an option GnuPG
+        ;;; removed in 2.5.  The agent dies with "invalid option" the instant
+        ;;; socket activation fires, the client falls back to auto-spawning
+        ;;; `gpg-agent --daemon', and that daemon unlinks and rebinds
+        ;;; S.gpg-agent out from under Shepherd.  Every prompt then lands on a
+        ;;; freshly spawned agent with an empty cache, so the TTLs below never
+        ;;; apply and orphaned agents pile up.  With it #f, no Shepherd service
+        ;;; exists, gpg auto-starts exactly one agent on demand, and the cache
+        ;;; holds.  ssh keys are handled by the ssh-agent service above.
         (service
           home-gpg-agent-service-type
           (home-gpg-agent-configuration
             (pinentry-program (file-append pinentry-qt "/bin/pinentry-qt"))
-            (ssh-support? #t)
+            (ssh-support? #f)
             (default-cache-ttl 28800)
             (max-cache-ttl 86400))))
       %base-home-services)))

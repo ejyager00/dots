@@ -15,9 +15,17 @@ zstyle ':vcs_info:git:*' formats ' (%b)'
 precmd() { vcs_info }
 PROMPT='%F{cyan}%~%f${vcs_info_msg_0_}%# '
 
+# pinentry needs to know which terminal to talk to when it falls back to the
+# curses backend (no Wayland/X display, e.g. a TTY or an ssh session).
+export GPG_TTY=$TTY
+
+# The agent itself is a Shepherd service on a fixed socket (see
+# home-config.scm); keychain inherits it rather than spawning its own, and
+# just makes sure the key is loaded.
 eval $(keychain --eval --quiet id_ed25519)
 
-# Secrets kept in `pass` (GPG-backed), not in this tracked repo.
-export LIBRARIAN_API_TOKEN="$(pass show librarian/api-token 2>/dev/null)"
+# Project secrets live in that project's .envrc (via `pass` + the direnv hook
+# below), not here -- a `pass show` at this level makes every new terminal
+# block on a pinentry prompt regardless of what you're actually doing.
 
 eval "$(direnv hook zsh)"

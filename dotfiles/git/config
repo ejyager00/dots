@@ -1,4 +1,13 @@
 [user]
+    name = Eric Yager
+    email = ejyager00@protonmail.com
     signingkey = 1C96981049FF9A9D0021D960A63252C709ECBA81
+
 [gpg]
     program = gpg
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true

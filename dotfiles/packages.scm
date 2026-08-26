@@ -91,6 +91,9 @@
       "font-liberation"
       "font-fira-code"
       
+      ;; Messaging
+      "telegram-desktop"
+
       ;; Flatpak
       "flatpak"
 
