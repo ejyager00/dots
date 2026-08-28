@@ -37,6 +37,7 @@
      ("kanshi"               . ,(bin "kanshi" "kanshi"))
      ("wl-paste"             . ,(bin "wl-clipboard" "wl-paste"))
      ("clipman"              . ,(bin "clipman" "clipman"))
+     ("udiskie"              . ,(bin "udiskie" "udiskie"))
      ("eww"                  . ,(bin "eww" "eww")))))
 
 (define %eww-yuck
@@ -108,6 +109,12 @@
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
              ("TMPDIR" . "/tmp")
+             ;;; Maven, Gradle and most JVM tooling read JAVA_HOME instead of
+             ;;; searching PATH, and anything that forks a compiler needs it to
+             ;;; name openjdk's `jdk' output -- the default `out' output ships
+             ;;; a JRE with no javac.  Resolved to the store item of the very
+             ;;; package %home-packages installs, so the two cannot drift.
+             ("JAVA_HOME" . ,#~(ungexp %jdk "jdk"))
              ;;; Points at the ssh-agent Shepherd service below.  Set here
              ;;; rather than in zshrc so Sway-launched graphical apps inherit
              ;;; it too -- they never source a shell rc file.

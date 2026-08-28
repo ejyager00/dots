@@ -15,6 +15,12 @@ exec @{lxqt-policykit-agent}
 # WAYLAND_DISPLAY at a predictable point.
 exec @{swaync}
 
+# Automount removable media via udisks.  Started after swaync so --notify has
+# a notification daemon to talk to, and after the polkit agent so unlocking
+# encrypted volumes can prompt.  No tray: eww is not a tray host, and an
+# appindicator with nowhere to draw makes udiskie exit at startup.
+exec @{udiskie} --automount --notify --no-tray
+
 # Declarative output management, keyed on EDID.
 exec @{kanshi}
 
