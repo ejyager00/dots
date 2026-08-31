@@ -13,6 +13,8 @@
   (guix download)
   (guix gexp)
   (gnu packages shells)
+  (roundabits services cups-queue)
+  (roundabits services ipp-usb)
   (roundabits services tailscale))
 
 (use-service-modules cups desktop networking sound ssh xorg)
@@ -69,7 +71,7 @@
         (comment "Eric Yager")
         (group "users")
         (home-directory "/home/eric")
-        (supplementary-groups '("wheel" "netdev" "audio" "video"))
+        (supplementary-groups '("wheel" "netdev" "audio" "video" "lp" "lpadmin"))
         (shell (file-append zsh "/bin/zsh")))
       %base-user-accounts))
 
@@ -78,7 +80,10 @@
   ;; for packages and 'guix install PACKAGE' to install a package.
   (packages
     (append
-      (list (specification->package "sway"))
+      (list (specification->package "sway")
+            ;; cups-service-type runs cupsd but extends no profile, so the
+            ;; client tools (lpstat, lpadmin, lpinfo, lp) come from here.
+            (specification->package "cups"))
       %base-packages))
 
   ;; Below is the list of system services.  To search for available
@@ -87,7 +92,29 @@
     (append
       (list
         (service openssh-service-type)
-        (service cups-service-type)
+        ;; web-interface? defaults to #f in Guix, which is why localhost:631
+        ;; serves nothing and there is no way to add a printer from a browser.
+        (service cups-service-type
+                 (cups-configuration
+                   (web-interface? #t)))
+        (service ipp-usb-service-type)
+        ;; Chromium/Brave lists only permanent CUPS destinations, not the
+        ;; temporary queues CUPS auto-creates for discovered DNS-SD printers,
+        ;; so the Brother needs a real queue to show up in its print dialog.
+        ;; The loopback URI is ipp-usb's; port 60000 is persisted per device
+        ;; serial under /var/ipp-usb/dev, so it is stable across replugs.
+        ;; Addressing it directly also avoids CUPS's dnssd backend collapsing
+        ;; the USB and WiFi adverts, which share a UUID, onto the WiFi one.
+        (service cups-queues-service-type
+                 (cups-queues-configuration
+                   (queues
+                     (list
+                       (cups-queue
+                         (name "Brother-MFC-J1010DW")
+                         (device-uri "ipp://localhost:60000/ipp/print")
+                         (description "Brother MFC-J1010DW (USB, driverless)")
+                         (location "roundabits")
+                         (default? #t))))))
         (service
           greetd-service-type
           (greetd-configuration

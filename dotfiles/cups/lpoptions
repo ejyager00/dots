@@ -1,0 +1,12 @@
+# Default print destination.
+#
+# Points at the permanent queue created by cups-queues-service-type, not at
+# the temporary queue CUPS auto-creates for the discovered DNS-SD printer.
+# Both name the same physical MFC-J1010DW, but only the permanent one is
+# visible to Chromium/Brave, so defaulting to it keeps every application
+# agreeing on which destination is "the printer".
+#
+# Note this file is a read-only store symlink: "set as default" in a print
+# dialog cannot write here.  Change the default by editing this file and
+# running "guix home reconfigure".
+Default Brother-MFC-J1010DW

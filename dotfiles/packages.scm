@@ -63,6 +63,9 @@
         "nb"
         "anki"
         "direnv"
+        "zathura"
+        "zathura-pdf-poppler"
+        "pdfarranger"
 
         ;; Security & secrets
         "gnupg"

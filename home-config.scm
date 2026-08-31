@@ -72,6 +72,7 @@
                ,(local-file "dotfiles/powermenu.sh" #:recursive? #t))
              (".local/bin/gsfmt"
                ,(local-file "dotfiles/gsfmt" #:recursive? #t))
+             (".cups/lpoptions" ,(local-file "dotfiles/cups/lpoptions"))
              (".local/bin/steam-flatpak"
                ,(program-file "steam-flatpak"
                  #~(execl "/bin/sh" "sh" "-c"
