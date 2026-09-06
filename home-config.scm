@@ -110,15 +110,7 @@
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
              ("TMPDIR" . "/tmp")
-             ;;; Maven, Gradle and most JVM tooling read JAVA_HOME instead of
-             ;;; searching PATH, and anything that forks a compiler needs it to
-             ;;; name openjdk's `jdk' output -- the default `out' output ships
-             ;;; a JRE with no javac.  Resolved to the store item of the very
-             ;;; package %home-packages installs, so the two cannot drift.
              ("JAVA_HOME" . ,#~(ungexp %jdk "jdk"))
-             ;;; Points at the ssh-agent Shepherd service below.  Set here
-             ;;; rather than in zshrc so Sway-launched graphical apps inherit
-             ;;; it too -- they never source a shell rc file.
              ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/ssh-agent.sock")
              ("QT_QPA_PLATFORM" . "wayland;xcb")
              ("QT_WAYLAND_DISABLE_WINDOWDECORATION" . "1")
@@ -130,16 +122,6 @@
              ("XCURSOR_THEME" . "Adwaita")
              ("XCURSOR_SIZE" . "24")
              ("XDG_DATA_DIRS" . "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:$XDG_DATA_DIRS")))
-        ;;; Connection sharing: the first ssh to a host opens a master
-        ;;; connection that later invocations reuse, so repeated commands skip
-        ;;; the TCP + key-exchange handshake.  %C hashes the connection
-        ;;; parameters, keeping the socket path well under the ~108-char UNIX
-        ;;; socket limit.
-        ;;;
-        ;;; No host-name pin: the router resolves "asahihome" via DHCP, and
-        ;;; known_hosts records the key under that name.  Pinning the IP would
-        ;;; make host-key verification look up the address instead, and a lease
-        ;;; change would break the pin and strand a stale entry.
         (service
           home-openssh-service-type
           (home-openssh-configuration
@@ -162,12 +144,6 @@
                   (user "git")
                   (port 2222)
                   (identity-file "~/.ssh/id_ed25519"))))))
-        ;;; A single ssh-agent for the whole session, bound to a fixed
-        ;;; socket path so SSH_AUTH_SOCK can be a static string in the
-        ;;; environment above.  Shepherd starts it at login, before Sway
-        ;;; brings up graphical apps, so those get a working agent without
-        ;;; sourcing anything.  keychain in zshrc inherits this agent (its
-        ;;; default behaviour) and only adds keys to it.
         (simple-service
           'ssh-agent
           home-shepherd-service-type
@@ -189,17 +165,7 @@
                              args))))
               (stop #~(make-kill-destructor))
               (respawn? #t))))
-        ;;; ssh-support? must stay #f.  Setting it #t is the only thing that
-        ;;; makes home-gpg-agent-service-type register a Shepherd service, and
-        ;;; that service launches `gpg-agent --supervised', an option GnuPG
-        ;;; removed in 2.5.  The agent dies with "invalid option" the instant
-        ;;; socket activation fires, the client falls back to auto-spawning
-        ;;; `gpg-agent --daemon', and that daemon unlinks and rebinds
-        ;;; S.gpg-agent out from under Shepherd.  Every prompt then lands on a
-        ;;; freshly spawned agent with an empty cache, so the TTLs below never
-        ;;; apply and orphaned agents pile up.  With it #f, no Shepherd service
-        ;;; exists, gpg auto-starts exactly one agent on demand, and the cache
-        ;;; holds.  ssh keys are handled by the ssh-agent service above.
+        ;;; ssh-support? must stay #f.
         (service
           home-gpg-agent-service-type
           (home-gpg-agent-configuration

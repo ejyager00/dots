@@ -3,22 +3,14 @@
   #:use-module (gnu packages)
   #:export (%home-packages %jdk))
 
-;;; Pinned to an LTS release rather than the bare "openjdk" spec, which always
-;;; resolves to the newest JDK in the channel and would silently jump major
-;;; versions on the next `guix pull'.  Exported so home-config.scm can point
-;;; JAVA_HOME at this exact package instead of restating the version.
 (define %jdk (specification->package "openjdk@21"))
 
 (define %home-packages
   (append
-    ;;; Guix splits openjdk into two outputs: `out' is only a JRE (java,
-    ;;; keytool), while `jdk' is the full kit (javac, jar, jshell, jlink).
-    ;;; Install `jdk' -- a JRE alone cannot compile anything.
     (list (list %jdk "jdk"))
     (specifications->packages
       (list
         ;; Browsers
-        "icecat"
         "brave-origin-bin"
 
         ;; Editors & language tooling
@@ -29,7 +21,6 @@
 
         ;; Terminal emulators
         "ghostty"
-        "foot"
 
         ;; Version control
         "git"
@@ -39,11 +30,6 @@
         ;; Build & language toolchains
         "make"
         "node"
-        ;;; Apache's own distribution, from the saayix channel.  Guix's `maven'
-        ;;; package is unusable for real projects: it pins the default lifecycle
-        ;;; plugins to versions that do not exist on Maven Central (surefire
-        ;;; "3.0.0-M4-M8"), and its bundled cglib/guice trip JDK 17+ module
-        ;;; encapsulation before it even gets that far.
         "maven-bin"
         "glibc"
         "python"

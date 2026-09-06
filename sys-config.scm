@@ -92,8 +92,6 @@
     (append
       (list
         (service openssh-service-type)
-        ;; web-interface? defaults to #f in Guix, which is why localhost:631
-        ;; serves nothing and there is no way to add a printer from a browser.
         (service cups-service-type
                  (cups-configuration
                    (web-interface? #t)))
@@ -103,8 +101,6 @@
         ;; so the Brother needs a real queue to show up in its print dialog.
         ;; The loopback URI is ipp-usb's; port 60000 is persisted per device
         ;; serial under /var/ipp-usb/dev, so it is stable across replugs.
-        ;; Addressing it directly also avoids CUPS's dnssd backend collapsing
-        ;; the USB and WiFi adverts, which share a UUID, onto the WiFi one.
         (service cups-queues-service-type
                  (cups-queues-configuration
                    (queues
