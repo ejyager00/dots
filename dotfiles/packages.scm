@@ -33,6 +33,19 @@
         "maven-bin"
         "glibc"
         "python"
+        "rust"
+        "rust:cargo"
+        "rust:tools"
+        "rust:rust-src"
+        ;; gcc-toolchain + pinned linux-libre-headers: needed as a `cc` for
+        ;; building cargo-installed tools (e.g. zstd-sys wants linux/limits.h,
+        ;; missing from glibc's own headers). Pin matches glibc's propagated
+        ;; version to avoid a profile conflict.
+        "gcc-toolchain"
+        "linux-libre-headers@6.12.17"
+        "zig"
+        "just"
+        "sqlite"
 
         ;; CLI utilities
         "bat"

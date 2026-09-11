@@ -106,7 +106,7 @@
           `(("EDITOR" . "fresh")
              ("BROWSER" . "brave-origin")
              ("NB_BROWSER" . "w3m")
-             ("PATH" . "$PATH:$HOME/.local/bin")
+             ("PATH" . "$PATH:$HOME/.local/bin:$HOME/.cargo/bin")
              ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
              ("TMPDIR" . "/tmp")
