@@ -1,7 +1,9 @@
 ;; ~/.dots/dotfiles/packages.scm
 (define-module (dotfiles packages)
   #:use-module (gnu packages)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:export (%home-packages %jdk))
 
 (define %jdk (specification->package "openjdk@21"))
@@ -9,11 +11,42 @@
 ;; saayix's prismlauncher pulls in its own gamemode, which builds against
 ;; systemd (forcing a local systemd build). Swap in Guix's elogind-based
 ;; gamemode, which has substitutes; Prism only needs its client header.
+;; Its wrapper also points QT_PLUGIN_PATH at qtwayland's lib/qt5/plugins,
+;; but qtwayland is Qt6, so the Wayland platform plugin is never found and
+;; Qt falls back to xcb. Retarget it to lib/qt6/plugins, and add qtsvg's
+;; plugins: Prism's icon themes are SVG and render blank without them.
+;; Finally, default "Use system GLFW" on, pointed at saayix's Wayland-only
+;; GLFW build, so the game window is native Wayland too. These are only
+;; defaults: prismlauncher.cfg / per-instance overrides still win.
 (define %prismlauncher
-  ((package-input-rewriting
-    `((,(@ (saayix packages games) gamemode)
-       . ,(@ (gnu packages linux) gamemode))))
-   (specification->package "prismlauncher")))
+  (let ((base ((package-input-rewriting
+                `((,(@ (saayix packages games) gamemode)
+                   . ,(@ (gnu packages linux) gamemode))))
+               (specification->package "prismlauncher")))
+        (qtsvg (@ (gnu packages qt) qtsvg))
+        (glfw (@ (saayix packages minecraft) glfw-wayland-minecraft)))
+    (package/inherit base
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'default-wayland-glfw
+                (lambda _
+                  (substitute* "launcher/Application.cpp"
+                    (("registerSetting\\(\"UseNativeGLFW\", false\\)")
+                     "registerSetting(\"UseNativeGLFW\", true)")
+                    (("registerSetting\\(\"CustomGLFWPath\", \"\"\\)")
+                     (string-append "registerSetting(\"CustomGLFWPath\", \""
+                                    #$glfw "/lib/libglfw.so\")")))))
+              (add-after 'patch-paths 'fix-qt-plugin-path
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (substitute* (string-append (assoc-ref outputs "out")
+                                              "/bin/prismlauncher")
+                    (("/lib/qt5/plugins")
+                     (string-append "/lib/qt6/plugins:"
+                                    #$qtsvg "/lib/qt6/plugins")))))))))
+      (inputs (modify-inputs (package-inputs base)
+                (append qtsvg glfw))))))
 
 (define %home-packages
   (append
