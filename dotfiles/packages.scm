@@ -1,13 +1,24 @@
 ;; ~/.dots/dotfiles/packages.scm
 (define-module (dotfiles packages)
   #:use-module (gnu packages)
+  #:use-module (guix packages)
   #:export (%home-packages %jdk))
 
 (define %jdk (specification->package "openjdk@21"))
 
+;; saayix's prismlauncher pulls in its own gamemode, which builds against
+;; systemd (forcing a local systemd build). Swap in Guix's elogind-based
+;; gamemode, which has substitutes; Prism only needs its client header.
+(define %prismlauncher
+  ((package-input-rewriting
+    `((,(@ (saayix packages games) gamemode)
+       . ,(@ (gnu packages linux) gamemode))))
+   (specification->package "prismlauncher")))
+
 (define %home-packages
   (append
-    (list (list %jdk "jdk"))
+    (list (list %jdk "jdk")
+          %prismlauncher)
     (specifications->packages
       (list
         ;; Browsers
@@ -97,6 +108,9 @@
         "playerctl"
         "wireplumber"
         "dbus"
+
+        ;; Images
+        "imagemagick"
 
         ;; Icon themes
         "hicolor-icon-theme"
