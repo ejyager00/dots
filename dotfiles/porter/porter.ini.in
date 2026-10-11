@@ -1,0 +1,17 @@
+# porter config, shared by the greeter (porter greet, run by greetd as the
+# "greeter" user) and the locker (porter lock, run as eric). Tokens of the
+# form at-sign brace NAME brace become store paths at build time; see
+# (dotfiles porter). Paths must not use ~/: the greeter's HOME is
+# /var/lib/porter, not /home/eric.
+
+[appearance]
+background=@{background}
+# The Dell; the Acer gets only the background.
+form-output=HDMI-A-3
+
+[greeter]
+default-user=eric
+# The greeter runs with a near-empty environment, so name the system
+# profile's sessions explicitly rather than relying on XDG_DATA_DIRS.
+session-dirs=/run/current-system/profile/share/wayland-sessions
+state-dir=/var/lib/porter

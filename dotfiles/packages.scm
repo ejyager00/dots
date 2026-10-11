@@ -56,6 +56,7 @@
       (list
         ;; Browsers
         "brave-origin-bin"
+        "epiphany"
 
         ;; Editors & language tooling
         "fresh-editor"
@@ -117,7 +118,7 @@
         "password-store"
 
         ;; Sway/Wayland desktop
-        "swaylock-effects"
+        "porter"           ; greeter + locker (ejyager00 channel)
         "wmenu"
         "kanshi"
         "swaynotificationcenter"
@@ -160,6 +161,7 @@
       
         ;; Messaging
         "telegram-desktop"
+        "discord"
 
         ;; Flatpak
         "flatpak"

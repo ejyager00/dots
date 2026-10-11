@@ -18,7 +18,9 @@
   (gnu system shadow)
   (guix gexp)
   (ejyager00 home template)
-  (dotfiles packages))
+  (ejyager00 packages porter)
+  (dotfiles packages)
+  (dotfiles porter))
 
 ;;; Resolve binaries to absolute store paths so autostart never depends on
 ;;; PATH ordering between the system and home profiles.
@@ -38,7 +40,9 @@
      ("wl-paste"             . ,(bin "wl-clipboard" "wl-paste"))
      ("clipman"              . ,(bin "clipman" "clipman"))
      ("udiskie"              . ,(bin "udiskie" "udiskie"))
-     ("eww"                  . ,(bin "eww" "eww")))))
+     ("eww"                  . ,(bin "eww" "eww"))
+     ("swayidle"             . ,(bin "swayidle" "swayidle"))
+     ("porter"               . ,(file-append porter "/bin/porter")))))
 
 (define %eww-yuck
   (substituted-file
@@ -72,6 +76,8 @@
                ,(local-file "dotfiles/powermenu.sh" #:recursive? #t))
              (".local/bin/gsfmt"
                ,(local-file "dotfiles/gsfmt" #:recursive? #t))
+             (".local/bin/channel-updates"
+               ,(local-file "dotfiles/channel-updates.scm" #:recursive? #t))
              (".cups/lpoptions" ,(local-file "dotfiles/cups/lpoptions"))
              (".local/bin/steam-flatpak"
                ,(program-file "steam-flatpak"
@@ -86,7 +92,7 @@
              ("sway/guix-autostart" ,%sway-autostart)
              ("eww/eww.yuck" ,%eww-yuck)
              ("eww/eww.scss" ,(local-file "dotfiles/eww/eww.scss"))
-             ("swaylock/config" ,(local-file "dotfiles/swaylock/config"))
+             ("porter/porter.ini" ,%porter-config)
              ("fresh/config.json" ,(local-file "dotfiles/fresh/config.json"))
              ("git/config" ,(local-file "dotfiles/git/config"))
              ("kanshi/config" ,(local-file "dotfiles/kanshi/config"))

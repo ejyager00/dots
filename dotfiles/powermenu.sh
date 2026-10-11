@@ -18,9 +18,11 @@ run() {
 watchdog() { (sleep 15; nag "$1 was accepted but the system is still up; see /var/log/messages") & }
 
 case "$(printf '%s\n' lock logout sleep reboot shutdown | wmenu -i -p power)" in
-  lock)     run swaylock ;;
+  lock)     run porter lock ;;
   logout)   run swaymsg exit ;;
-  sleep)    swaylock -f; sleep 5; run loginctl suspend ;;
+  # porter lock -f returns once the lock is confirmed, so no sleep is
+  # needed; swayidle's before-sleep hook would lock anyway.
+  sleep)    run porter lock -f && run loginctl suspend ;;
   reboot)   watchdog reboot; run loginctl reboot ;;
   shutdown) watchdog poweroff; run loginctl poweroff ;;
 esac

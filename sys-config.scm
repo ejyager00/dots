@@ -13,44 +13,20 @@
   (guix download)
   (guix gexp)
   (gnu packages shells)
+  (dotfiles porter)
   (roundabits services cups-queue)
   (roundabits services ipp-usb)
+  (roundabits services porter)
   (roundabits services tailscale))
 
 (use-service-modules cups desktop networking sound ssh xorg)
 
-(define %gtkgreet-background
-  (local-file "/home/eric/Images/backgrounds/library.jpg"))
-
-(define %gtkgreet-css
-  (mixed-text-file
-    "gtkgreet.css"
-    "window {\n"
-    "  background-image: url(\"file://" %gtkgreet-background "\");\n"
-    "  background-size: cover;\n"
-    "  background-position: center;\n"
-    "}\n"
-    "\n"
-    "#clock {\n"
-    "  color: white;\n"
-    "  text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.8);\n"
-    "}\n"
-    "\n"
-    "#body {\n"
-    "  background-color: rgba(50, 50, 50, 0.5);\n"
-    "  border-radius: 10px;\n"
-    "  padding: 20px"
-    "}\n"
-    "\n"
-    "#body label {\n"
-    "  color: white;\n"
-    "}\n"
-    "\n"
-    ;; Cancel button
-    "#body button:nth-last-child(2) {\n"
-    "  background-image: none;\n"
-    "  background-color: #e01b24;\n"
-    "}\n"))
+(define %greeter-outputs
+  ;; Same layout as dotfiles/kanshi/config (Dell left, Acer right); the
+  ;; greeter's sway runs no kanshi.  Identified by EDID, like kanshi.
+  (string-append
+    "output \"Dell Inc. DELL SE2219H 650T043\" mode 1920x1080@60Hz position 0,0\n"
+    "output \"Acer Technologies KB272 E 34030B5623W01\" mode 1920x1080@60Hz position 1920,0\n"))
 
 (operating-system
   (locale "en_US.utf8")
@@ -120,19 +96,11 @@
                   (terminal-vt "7")
                   (terminal-switch #t)
                   (default-session-command
-                    (greetd-gtkgreet-sway-session
-                      (command "sway")
-                      (gtkgreet-style %gtkgreet-css))))))))
-        (service
-          screen-locker-service-type
-          (screen-locker-configuration
-            (name "swaylock")
-            (program
-              (file-append
-                (specification->package "swaylock-effects")
-                "/bin/swaylock"))
-            (using-pam? #t)
-            (using-setuid? #f)))
+                    (porter-greetd-session
+                      %porter-config
+                      #:sway-configuration %greeter-outputs)))))))
+        ;; PAM service for porter lock, and the greeter's directories.
+        (service porter-service-type)
             (udev-rules-service
               'steam-devices
               (specification->package "steam-devices-udev-rules"))

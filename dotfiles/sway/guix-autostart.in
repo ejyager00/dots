@@ -33,3 +33,9 @@ exec @{wl-paste} -t text --watch @{clipman} store --no-persist
 # itself on first run, so no separate `eww daemon` line is needed.
 exec @{eww} open fastfetch-hdmi-a-3
 exec @{eww} open fastfetch-dp-4
+
+# Lock before every suspend, however it's triggered (powermenu, loginctl,
+# lid).  -w makes swayidle hold logind's sleep inhibitor until the command
+# exits, and porter lock -f exits only once sway confirms the lock (or 0
+# straight away if the session is already locked).  No idle timeouts.
+exec @{swayidle} -w before-sleep '@{porter} lock -f'
