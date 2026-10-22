@@ -71,6 +71,7 @@
         "git"
         "tig"
         "gh"
+        "forgejo-cli"
 
         ;; Build & language toolchains
         "make"
@@ -99,6 +100,8 @@
         "curl"
         "socat"
         "ncurses"
+        "btop"
+        "radeontop"
 
         ;; Documents & notes
         "glow"

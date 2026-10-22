@@ -8,7 +8,7 @@
 
 ;;; In the store, so the greeter user can read it; it can't read /home/eric.
 (define %porter-background
-  (local-file "/home/eric/Images/backgrounds/library.jpg"))
+  (local-file "/home/eric/Images/backgrounds/running-animals.png"))
 
 (define %porter-config
   (substituted-file

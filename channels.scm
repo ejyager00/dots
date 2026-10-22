@@ -30,7 +30,7 @@
     (name 'saayix)
     (url "https://codeberg.org/look/saayix")
     (branch "main")
-    (commit "222ac1daef3f58a45e75f2a947b1d2c9c3a932b9")
+    (commit "4c17d2369d4b321b7a99eb2ab97a33fbc4e2aea2")
     (introduction
       (make-channel-introduction
         "12540f593092e9a177eb8a974a57bb4892327752"
@@ -40,7 +40,7 @@
     (name 'panther)
     (url "https://codeberg.org/gofranz/panther")
     (branch "master")
-    (commit "e8d377581c9e4fc70a4bb97981f1ba18a96cce12")
+    (commit "90f3f18f340f7882600d4783829e74ae17eacbda")
     (introduction
       (make-channel-introduction
         "54b4056ac571611892c743b65f4c47dc298c49da"
