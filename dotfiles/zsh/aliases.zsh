@@ -3,3 +3,4 @@ alias sysreconfig="sudo guix system reconfigure /home/eric/.dots/sys-config.scm"
 alias ll='ls -lh'
 alias screengrab='grim -g "$(slurp)"'
 alias herdreboot='sudo herd stop root'
+alias claude-xpl='CLAUDE_CONFIG_DIR=~/.claude-xpl claude'
