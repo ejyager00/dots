@@ -57,6 +57,7 @@
         ;; Browsers
         "brave-origin-bin"
         "epiphany"
+        "icecat"
 
         ;; Editors & language tooling
         "fresh-editor"
