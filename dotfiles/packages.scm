@@ -48,14 +48,37 @@
       (inputs (modify-inputs (package-inputs base)
                 (append qtsvg glfw))))))
 
+;; Chromium's VA-API video decode path corrupts YouTube playback on this
+;; RX 6900 XT / Mesa 26.0.2: a vertical seam down the middle (tile-column
+;; boundary), one half off in hue or showing stale blocks.  Mesa itself
+;; decodes bit-exactly (ffmpeg -hwaccel vaapi framemd5 == software, VP9 and
+;; 2-column AV1), and VPP colour conversion is clean, so the bug is in
+;; Chromium's own decoder delegate.  AMD_DEBUG=nodcc and disabling only
+;; AcceleratedVideoDecodeLinuxZeroCopyGL don't help; only turning off hardware
+;; decode does.  This build has no per-codec VA-API toggle, so fall back to
+;; software (dav1d/libvpx) for everything.  Baked into the wrapper so the
+;; .desktop entries, which exec bin/brave-origin, pick it up too.
+(define %brave-origin
+  (let ((base (specification->package "brave-origin-bin")))
+    (package/inherit base
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'install-wrapper 'disable-video-decode-accel
+                (lambda _
+                  (substitute* (string-append #$output "/bin/brave-origin")
+                    (("\"\\$@\"")
+                     "--disable-accelerated-video-decode \"$@\"")))))))))))
+
 (define %home-packages
   (append
     (list (list %jdk "jdk")
-          %prismlauncher)
+          %prismlauncher
+          %brave-origin)
     (specifications->packages
       (list
-        ;; Browsers
-        "brave-origin-bin"
+        ;; Browsers (brave-origin-bin: see %brave-origin above)
         "epiphany"
         "icecat"
 
