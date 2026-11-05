@@ -1,7 +1,17 @@
 #!/bin/sh
-# power menu for wmenu & sway
+# power menu for wmenu; works under any compositor that sets its IPC socket
+# (sway: SWAYSOCK, niri: NIRI_SOCKET)
 
-nag() { swaynag -t error -m "powermenu: $1" >/dev/null 2>&1 & }
+if [ -n "$SWAYSOCK" ]; then
+  nag() { swaynag -t error -m "powermenu: $1" >/dev/null 2>&1 & }
+  quit() { swaymsg exit; }
+elif [ -n "$NIRI_SOCKET" ]; then
+  nag() { notify-send -u critical powermenu "$1" >/dev/null 2>&1 & }
+  quit() { niri msg action quit --skip-confirmation; }
+else
+  nag() { notify-send -u critical powermenu "$1" >/dev/null 2>&1 & }
+  quit() { echo "no known compositor (SWAYSOCK/NIRI_SOCKET unset)" >&2; return 1; }
+fi
 
 # run a command, surfacing failure instead of discarding it. note that
 # loginctl reports errors to syslog only -- it writes nothing to stdout
@@ -19,7 +29,7 @@ watchdog() { (sleep 15; nag "$1 was accepted but the system is still up; see /va
 
 case "$(printf '%s\n' lock logout sleep reboot shutdown | wmenu -i -p power)" in
   lock)     run porter lock ;;
-  logout)   run swaymsg exit ;;
+  logout)   run quit ;;
   # porter lock -f returns once the lock is confirmed, so no sleep is
   # needed; swayidle's before-sleep hook would lock anyway.
   sleep)    run porter lock -f && run loginctl suspend ;;

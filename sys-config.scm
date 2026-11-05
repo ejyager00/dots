@@ -57,6 +57,8 @@
   (packages
     (append
       (list (specification->package "sway")
+            ;; Second session in porter (niri.desktop -> wayland-sessions).
+            (specification->package "niri")
             ;; cups-service-type runs cupsd but extends no profile, so the
             ;; client tools (lpstat, lpadmin, lpinfo, lp) come from here.
             (specification->package "cups"))

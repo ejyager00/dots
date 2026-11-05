@@ -121,19 +121,26 @@
         "keychain"
         "password-store"
 
-        ;; Sway/Wayland desktop
+        ;; Wayland desktop (sway + niri)
         "porter"           ; greeter + locker (ejyager00 channel)
         "wmenu"
         "kanshi"
         "swaynotificationcenter"
         "lxqt-policykit"
+        "libnotify"        ; notify-send, for scripts outside sway (powermenu)
         "udiskie"
         "i3status-rust"
+
+        ;; niri session (niri itself is in sys-config.scm so its .desktop
+        ;; lands in the system profile, where porter looks for sessions)
+        "noctalia-shell"
+        "xwayland-satellite"   ; X11 clients; niri spawns it on demand
 
         ;; XDG desktop portals
         "xdg-desktop-portal"
         "xdg-desktop-portal-wlr"
         "xdg-desktop-portal-gtk"
+        "xdg-desktop-portal-gnome"   ; niri: ScreenCast/Screenshot
 
         ;; Screenshots & clipboard
         "grim"

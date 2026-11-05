@@ -44,6 +44,32 @@
      ("swayidle"             . ,(bin "swayidle" "swayidle"))
      ("porter"               . ,(file-append porter "/bin/porter")))))
 
+(define %niri-config
+  ;; Validated at build time: a config niri rejects fails `guix home build`
+  ;; instead of dropping the niri session to its built-in defaults.
+  (let ((raw (substituted-file
+              "niri-config-unvalidated.kdl"
+              (local-file "dotfiles/niri/config.kdl.in")
+              `(("dbus-update-activation-environment"
+                 . ,(bin "dbus" "dbus-update-activation-environment"))
+                ("noctalia"             . ,(bin "noctalia-shell" "noctalia"))
+                ("lxqt-policykit-agent" . ,(bin "lxqt-policykit" "lxqt-policykit-agent"))
+                ("udiskie"              . ,(bin "udiskie" "udiskie"))
+                ("wl-paste"             . ,(bin "wl-clipboard" "wl-paste"))
+                ("clipman"              . ,(bin "clipman" "clipman"))
+                ("eww"                  . ,(bin "eww" "eww"))
+                ("swayidle"             . ,(bin "swayidle" "swayidle"))
+                ("porter"               . ,(file-append porter "/bin/porter"))
+                ("xwayland-satellite"
+                 . ,(bin "xwayland-satellite" "xwayland-satellite"))))))
+    (computed-file
+     "niri-config.kdl"
+     #~(begin
+         (setenv "HOME" "/tmp")
+         (unless (zero? (system* #$(bin "niri" "niri") "validate" "-c" #$raw))
+           (error "niri validate rejected the generated config"))
+         (copy-file #$raw #$output)))))
+
 (define %eww-yuck
   (substituted-file
    "eww-yuck"
@@ -90,6 +116,8 @@
              ("guix/channels.scm" ,(local-file "channels.scm"))
              ("sway/config" ,(local-file "dotfiles/sway/config"))
              ("sway/guix-autostart" ,%sway-autostart)
+             ("niri/config.kdl" ,%niri-config)
+             ("noctalia/config.toml" ,(local-file "dotfiles/noctalia/config.toml"))
              ("eww/eww.yuck" ,%eww-yuck)
              ("eww/eww.scss" ,(local-file "dotfiles/eww/eww.scss"))
              ("porter/porter.ini" ,%porter-config)
@@ -98,8 +126,10 @@
              ("kanshi/config" ,(local-file "dotfiles/kanshi/config"))
              ("i3status-rust/config.toml"
                ,(local-file "dotfiles/i3status-rust/config.toml"))
-             ("xdg-desktop-portal/portals.conf"
-               ,(local-file "dotfiles/xdg-desktop-portal/portals.conf"))
+             ("xdg-desktop-portal/sway-portals.conf"
+               ,(local-file "dotfiles/xdg-desktop-portal/sway-portals.conf"))
+             ("xdg-desktop-portal/niri-portals.conf"
+               ,(local-file "dotfiles/xdg-desktop-portal/niri-portals.conf"))
              ("xdg-desktop-portal-wlr/config"
                ,(local-file "dotfiles/xdg-desktop-portal/wlr-config"))
              ("gtk-3.0/settings.ini"
@@ -113,14 +143,12 @@
              ("BROWSER" . "brave-origin")
              ("NB_BROWSER" . "w3m")
              ("PATH" . "$PATH:$HOME/.local/bin:$HOME/.cargo/bin")
-             ("XDG_CURRENT_DESKTOP" . "sway")
              ("XDG_SESSION_TYPE" . "wayland")
              ("TMPDIR" . "/tmp")
              ("JAVA_HOME" . ,#~(ungexp %jdk "jdk"))
              ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/ssh-agent.sock")
              ("QT_QPA_PLATFORM" . "wayland;xcb")
              ("QT_WAYLAND_DISABLE_WINDOWDECORATION" . "1")
-             ("GDK_BACKEND" . "wayland,x11")
              ("MOZ_ENABLE_WAYLAND" . "1")
              ("SDL_VIDEODRIVER" . "wayland")
              ("_JAVA_AWT_WM_NONREPARENTING" . "1")

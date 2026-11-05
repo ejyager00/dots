@@ -1,0 +1,62 @@
+# Noctalia shell config for the niri session.  Managed by Guix Home.
+#
+# Noctalia merges every *.toml in ~/.config/noctalia/, then applies the
+# settings GUI's overrides from ~/.local/state/noctalia/settings.toml, which
+# wins.  Anything changed in the GUI that is worth keeping belongs in here;
+# delete settings.toml afterwards so this file is authoritative again.
+#
+# Division of labour with the rest of the session (see niri/config.kdl.in):
+# noctalia draws the bar, launcher, notifications, OSD and wallpaper; porter
+# stays the locker, lxqt-policykit the polkit agent, clipman the clipboard
+# history -- the same daemons the sway session uses.
+
+[shell]
+setup_wizard_enabled = false   # config is declarative; no first-run wizard
+telemetry_enabled = false
+polkit_agent = false           # lxqt-policykit-agent is spawned by niri
+# Clipboard history would need a Secret Service provider (or a key file) to
+# persist; clipman already covers it, bound to Mod+Shift+V.
+clipboard_enabled = false
+
+# porter is the locker.  With noctalia's lockscreen off it never takes
+# ext-session-lock, so it cannot race porter for it; swayidle's before-sleep
+# hook (spawned by niri) does the lock-on-suspend.
+[lockscreen]
+enabled = false
+lock_before_suspend = false
+
+[wallpaper.default]
+path = "/home/eric/Images/backgrounds/pixelFamilyPortrait.26.07.30.png"
+
+[wallpaper]
+directory = "/home/eric/Images/backgrounds"
+
+# Session panel.  Declaring any rows replaces the built-in five, so all are
+# listed.  Lock rows call porter: noctalia's own lock actions are no-ops while
+# its lockscreen is disabled.  The lock+suspend row mirrors powermenu.
+[[shell.session.actions]]
+action = "command"
+label = "Lock"
+glyph = "lock"
+command = "porter lock"
+shortcut = "1"
+
+[[shell.session.actions]]
+action = "logout"
+shortcut = "2"
+
+[[shell.session.actions]]
+action = "command"
+label = "Lock & Suspend"
+glyph = "bedtime"
+command = "porter lock -f && loginctl suspend"
+shortcut = "3"
+
+[[shell.session.actions]]
+action = "reboot"
+shortcut = "4"
+
+[[shell.session.actions]]
+action = "shutdown"
+shortcut = "5"
+variant = "destructive"
