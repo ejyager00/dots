@@ -40,7 +40,7 @@
      ("wl-paste"             . ,(bin "wl-clipboard" "wl-paste"))
      ("clipman"              . ,(bin "clipman" "clipman"))
      ("udiskie"              . ,(bin "udiskie" "udiskie"))
-     ("eww"                  . ,(bin "eww" "eww"))
+     ("eww"                  . ,(file-append %eww "/bin/eww"))
      ("swayidle"             . ,(bin "swayidle" "swayidle"))
      ("porter"               . ,(file-append porter "/bin/porter")))))
 
@@ -57,7 +57,9 @@
                 ("udiskie"              . ,(bin "udiskie" "udiskie"))
                 ("wl-paste"             . ,(bin "wl-clipboard" "wl-paste"))
                 ("clipman"              . ,(bin "clipman" "clipman"))
-                ("eww"                  . ,(bin "eww" "eww"))
+                ("eww"                  . ,(file-append %eww "/bin/eww"))
+                ("niri"                 . ,(bin "niri" "niri"))
+                ("grep"                 . ,(bin "grep" "grep"))
                 ("swayidle"             . ,(bin "swayidle" "swayidle"))
                 ("porter"               . ,(file-append porter "/bin/porter"))
                 ("xwayland-satellite"

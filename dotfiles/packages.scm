@@ -4,7 +4,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:export (%home-packages %jdk))
+  #:export (%home-packages %jdk %eww))
 
 (define %jdk (specification->package "openjdk@21"))
 
@@ -71,11 +71,34 @@
                     (("\"\\$@\"")
                      "--disable-accelerated-video-decode \"$@\"")))))))))))
 
+;; niri keeps a layer surface in the overview backdrop (unscaled, behind the
+;; workspaces, like the wallpaper) only if it sits on the background layer
+;; *and* has exclusive zone -1.  eww can pick the layer but never sets -1:
+;; ':exclusive false' leaves the default 0.  Make background-stacked windows
+;; ignore exclusive zones, as a wallpaper would; bottom/top/overlay windows
+;; (the sway session's overlay) are untouched.
+(define %eww
+  (let ((base (specification->package "eww")))
+    (package/inherit base
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'background-ignores-exclusive-zones
+                (lambda _
+                  (substitute* "crates/eww/src/display_backend.rs"
+                    (("window\\.auto_exclusive_zone_enable\\(\\);" all)
+                     (string-append
+                      all "\n            } else if matches!(window_init.stacking, "
+                      "WindowStacking::Background) {\n"
+                      "                window.set_exclusive_zone(-1);"))))))))))))
+
 (define %home-packages
   (append
     (list (list %jdk "jdk")
           %prismlauncher
-          %brave-origin)
+          %brave-origin
+          %eww)
     (specifications->packages
       (list
         ;; Browsers (brave-origin-bin: see %brave-origin above)
@@ -200,6 +223,5 @@
         ;; Flatpak
         "flatpak"
 
-        ;; Desktop widgets
-        "eww"
+        ;; Desktop widgets (eww: see %eww above)
         "fastfetch"))))

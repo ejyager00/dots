@@ -29,10 +29,10 @@ exec @{kanshi}
 # race that corrupts Firefox-family selections.
 exec @{wl-paste} -t text --watch @{clipman} store --no-persist
 
-# Fastfetch desktop overlay, one window per monitor.  `eww open` daemonizes
-# itself on first run, so no separate `eww daemon` line is needed.
-exec @{eww} open fastfetch-hdmi-a-3
-exec @{eww} open fastfetch-dp-4
+# Fastfetch desktop overlay, one window per monitor.  `eww open-many`
+# daemonizes itself on first run, so no separate `eww daemon` line is needed;
+# one call, because two separate `eww open`s race to start the daemon.
+exec @{eww} open-many fastfetch-hdmi-a-3 fastfetch-dp-4
 
 # Lock before every suspend, however it's triggered (powermenu, loginctl,
 # lid).  -w makes swayidle hold logind's sleep inhibitor until the command

@@ -8,6 +8,14 @@
 ;; application windows -- so it reads as part of the desktop, not a window.
 ;; :focusable "none" and :exclusive false keep it out of the way of input
 ;; and tiling layout.
+;;
+;; The niri session opens the fastfetch-backdrop-* windows instead.  niri's
+;; overview scales the bottom layer down along with the workspaces; only
+;; background-layer surfaces with exclusive zone -1 can be lifted into the
+;; static backdrop (layer-rule place-within-backdrop, niri/config.kdl.in).
+;; The patched eww (%eww in dotfiles/packages.scm) gives "bg" windows that -1,
+;; so their margin counts from the output edge, not from below noctalia's bar:
+;; :y is the bar's 34px plus the same 24px gap.
 
 (defpoll fastfetch_output
   :interval "30s"
@@ -48,4 +56,32 @@
   :exclusive false
   :focusable "none"
   :namespace "fastfetch-widget"
+  (fastfetch-widget))
+
+(defwindow fastfetch-backdrop-hdmi-a-3
+  :monitor "HDMI-A-3"
+  :geometry (geometry
+              :x "24px"
+              :y "58px"
+              :width "700px"
+              :height "242px"
+              :anchor "top right")
+  :stacking "bg"
+  :exclusive false
+  :focusable "none"
+  :namespace "fastfetch-backdrop"
+  (fastfetch-widget))
+
+(defwindow fastfetch-backdrop-dp-4
+  :monitor "DP-4"
+  :geometry (geometry
+              :x "24px"
+              :y "58px"
+              :width "700px"
+              :height "242px"
+              :anchor "top right")
+  :stacking "bg"
+  :exclusive false
+  :focusable "none"
+  :namespace "fastfetch-backdrop"
   (fastfetch-widget))

@@ -69,6 +69,14 @@ layer-rule {
     place-within-backdrop true
 }
 
+// Same for the fastfetch overlays, so the overview leaves them full-size on
+// the desktop instead of shrinking them with the workspaces.  Needs the eww
+// "bg" stacking + exclusive zone -1; see dotfiles/eww/eww.yuck.in.
+layer-rule {
+    match namespace="^fastfetch-backdrop$"
+    place-within-backdrop true
+}
+
 // --- Startup (counterpart of dotfiles/sway/guix-autostart.in) -------------
 
 // niri --session already pushes WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP
@@ -88,9 +96,12 @@ spawn-at-startup "@{udiskie}" "--automount" "--notify" "--no-tray"
 // Clipboard history, same single persistent wl-paste stream as under sway.
 spawn-at-startup "@{wl-paste}" "-t" "text" "--watch" "@{clipman}" "store" "--no-persist"
 
-// Fastfetch desktop overlays (layer-shell, bottom layer, by connector name).
-spawn-at-startup "@{eww}" "open" "fastfetch-hdmi-a-3"
-spawn-at-startup "@{eww}" "open" "fastfetch-dp-4"
+// Fastfetch desktop overlays (layer-shell, background layer, in the overview
+// backdrop; by connector name).  They share the background layer with
+// noctalia's wallpaper, where the later-mapped surface stacks on top, so wait
+// (up to ~10s) for the wallpaper first.  One open-many call: two separate
+// `eww open`s race to start the daemon and can leave two of them running.
+spawn-sh-at-startup "i=0; until @{niri} msg layers | @{grep} -q noctalia-wallpaper || [ $i -ge 50 ]; do i=$((i+1)); sleep 0.2; done; exec @{eww} open-many fastfetch-backdrop-hdmi-a-3 fastfetch-backdrop-dp-4"
 
 // Lock before every suspend with porter; see the sway autostart for why -w.
 spawn-at-startup "@{swayidle}" "-w" "before-sleep" "@{porter} lock -f"
