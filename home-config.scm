@@ -78,6 +78,26 @@
      ("python3"   . ,(bin "python" "python3"))
      ("ansi2pango" . ,(local-file "dotfiles/eww/ansi2pango.py")))))
 
+;;; nonguix's anki is an FHS-container wrapper whose output has no share/, so
+;;; no launcher sees it.  The real entry lives in the (unexported) anki-client
+;;; inside the container; reuse its icon, but Exec must be the host wrapper.
+(define %anki-desktop
+  (mixed-text-file
+   "anki.desktop"
+   "[Desktop Entry]\n"
+   "Type=Application\n"
+   "Name=Anki\n"
+   "GenericName=Flashcards\n"
+   "Comment=An intelligent spaced-repetition memory training program\n"
+   "Exec=" (bin "anki" "anki") " %f\n"
+   "Icon=" (file-append (@@ (nongnu packages productivity) anki-client)
+                        "/share/pixmaps/anki.png") "\n"
+   "Categories=Education;Languages;Qt;\n"
+   "MimeType=application/x-apkg;application/x-anki;application/x-ankiaddon;\n"
+   "Terminal=false\n"
+   "SingleMainWindow=true\n"
+   "StartupWMClass=anki\n"))
+
 (home-environment
   (packages %home-packages)
 
@@ -136,6 +156,9 @@
                ,(local-file "dotfiles/gtk/3.0-settings.ini"))
              ("gtk-4.0/settings.ini"
                ,(local-file "dotfiles/gtk/4.0-settings.ini"))))
+        (service
+          home-xdg-data-files-service-type
+          `(("applications/anki.desktop" ,%anki-desktop)))
         (simple-service
           'my-env
           home-environment-variables-service-type
