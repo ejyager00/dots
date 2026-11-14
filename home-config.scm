@@ -180,7 +180,11 @@
              ("GTK_THEME" . "Adwaita:dark")
              ("XCURSOR_THEME" . "Adwaita")
              ("XCURSOR_SIZE" . "24")
-             ("XDG_DATA_DIRS" . "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:$XDG_DATA_DIRS")))
+             ("XDG_DATA_DIRS" . "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:$XDG_DATA_DIRS")
+             ;; flatpak writes its own binary path into exported .desktop
+             ;; Exec= lines at deploy time; the default is a /gnu/store path
+             ;; that gets GC'd.  Point it at the stable profile symlink.
+             ("FLATPAK_BINARY" . "$HOME/.guix-home/profile/bin/flatpak")))
         (service
           home-openssh-service-type
           (home-openssh-configuration
