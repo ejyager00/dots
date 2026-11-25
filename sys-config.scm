@@ -12,6 +12,7 @@
   (guix packages)
   (guix download)
   (guix gexp)
+  (gnu packages networking)
   (gnu packages shells)
   (dotfiles porter)
   (roundabits services cups-queue)
@@ -106,7 +107,18 @@
             (udev-rules-service
               'steam-devices
               (specification->package "steam-devices-udev-rules"))
-        (service tailscale-service-type))
+        (service tailscale-service-type)
+        ;; Arm Wake-on-LAN (magic packet) on the onboard RTL8125 each boot;
+        ;; r8169 keeps it across a clean shutdown but not across boots.
+        ;; Also needs ErP disabled + Wake on LAN enabled in the BIOS.
+        (udev-rules-service
+          'wake-on-lan
+          (file->udev-rule
+            "90-wake-on-lan.rules"
+            (mixed-text-file
+              "90-wake-on-lan.rules"
+              "ACTION==\"add\", SUBSYSTEM==\"net\", NAME==\"enp5s0\", "
+              "RUN+=\"" ethtool "/sbin/ethtool -s %k wol g\"\n"))))
       (modify-services
         %desktop-services
         (delete gdm-service-type)
