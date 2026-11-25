@@ -110,6 +110,7 @@
         "micro"
         "guile-lsp-server"
         "claude-code"
+        "ccburn"           ; usage-limit TUI (ejyager00 channel)
 
         ;; Terminal emulators
         "ghostty"
@@ -146,6 +147,7 @@
         "jq"
         "curl"
         "socat"
+        "rsync"
         "ncurses"
         "btop"
         "radeontop"
