@@ -220,7 +220,6 @@
       
         ;; Messaging
         "telegram-desktop"
-        "discord"
 
         ;; Flatpak
         "flatpak"
